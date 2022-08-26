@@ -1,0 +1,10 @@
+.\objects\rectangle.o: Src\glcd\rectangle.c
+.\objects\rectangle.o: Src\glcd\rectangle.h
+.\objects\rectangle.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\rectangle.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\rectangle.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\objects\rectangle.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\rectangle.o: .\u8g2\csrc\u8g2.h
+.\objects\rectangle.o: .\u8g2\csrc\u8x8.h
+.\objects\rectangle.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\rectangle.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\limits.h

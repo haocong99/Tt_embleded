@@ -1,0 +1,431 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.35.0.0
+Copyright (C) 2021 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: hap 1, 2, LIC=UJWP0-B3I36-MM89I-TJBFC-0AQNS-DDDY2
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Plus  Version: 5.35.0.2
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 7 (build 960)
+Assembler:       Armasm.exe V5.06 update 7 (build 960)
+Linker/Locator:  ArmLink.exe V5.06 update 7 (build 960)
+Library Manager: ArmAr.exe V5.06 update 7 (build 960)
+Hex Converter:   FromElf.exe V5.06 update 7 (build 960)
+CPU DLL:         SARMCM3.DLL V5.35.0.2
+Dialog DLL:      DARMCM1.DLL V1.19.4.0
+Target DLL:      Segger\JL2CM3.dll V2.99.40.0
+Dialog DLL:      TARMCM1.DLL V1.14.4.0
+ 
+<h2>Project:</h2>
+D:\STM32\thuctap\Main_BT\Main_BT\AirCon.uvprojx
+Project File Date:  07/19/2021
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Rebuild target 'Target 1'
+compiling main.c...
+Src\MITSUMISHI_HEAVY_INDUSTRIES.h(39): warning:  #1295-D: Deprecated declaration control_air_mitsubishi_heavy_industries - give arg types
+  void control_air_mitsubishi_heavy_industries();
+Src\main.c(189): warning:  #223-D: function "test_system" declared implicitly
+        test_system();
+Src\main.c(195): warning:  #177-D: variable "temp"  was declared but never referenced
+        uint8_t temp = 18;
+Src\main.c(354): warning:  #177-D: function "Error_Handler"  was declared but never referenced
+  static void Error_Handler(void)
+Src\main.c: 4 warnings, 0 errors
+compiling stm32f0xx_hal_msp.c...
+compiling stm32f0xx_it.c...
+compiling ringbuf.c...
+compiling rs485.c...
+Src\MITSUMISHI_HEAVY_INDUSTRIES.h(39): warning:  #1295-D: Deprecated declaration control_air_mitsubishi_heavy_industries - give arg types
+  void control_air_mitsubishi_heavy_industries();
+Src\rs485.c(663): warning:  #1-D: last line of file ends without a newline
+  }
+Src\rs485.c: 2 warnings, 0 errors
+compiling do.c...
+Src\MITSUMISHI_HEAVY_INDUSTRIES.h(39): warning:  #1295-D: Deprecated declaration control_air_mitsubishi_heavy_industries - give arg types
+  void control_air_mitsubishi_heavy_industries();
+Src\do.c(498): warning:  #1-D: last line of file ends without a newline
+  }
+Src\do.c: 2 warnings, 0 errors
+compiling crc.c...
+compiling bootloader.c...
+compiling S25FL1.c...
+compiling SPI.c...
+compiling Time.c...
+Src\MITSUMISHI_HEAVY_INDUSTRIES.h(39): warning:  #1295-D: Deprecated declaration control_air_mitsubishi_heavy_industries - give arg types
+  void control_air_mitsubishi_heavy_industries();
+Src\Time.c: 1 warning, 0 errors
+compiling temperature.c...
+Src\MITSUMISHI_HEAVY_INDUSTRIES.h(39): warning:  #1295-D: Deprecated declaration control_air_mitsubishi_heavy_industries - give arg types
+  void control_air_mitsubishi_heavy_industries();
+Src\temperature.c: 1 warning, 0 errors
+compiling system_start.c...
+Src\MITSUMISHI_HEAVY_INDUSTRIES.h(39): warning:  #1295-D: Deprecated declaration control_air_mitsubishi_heavy_industries - give arg types
+  void control_air_mitsubishi_heavy_industries();
+Src\system_start.c(112): warning:  #223-D: function "memset" declared implicitly
+        memset(&arr_read[0],0,6);
+Src\system_start.c(173): warning:  #223-D: function "memset" declared implicitly
+        memset(&uid_read[0],'F',24);
+Src\system_start.c(179): warning:  #223-D: function "Cal_CRC8" declared implicitly
+        crc_cal = Cal_CRC8(&uid_write[0], 24);
+Src\system_start.c(227): warning:  #223-D: function "memset" declared implicitly
+        memset(&uid_get[0],'F',24);
+Src\system_start.c(245): warning:  #223-D: function "Cal_CRC8" declared implicitly
+                crc_cal = Cal_CRC8(&uid_get[0], 24);
+Src\system_start.c(297): warning:  #223-D: function "strlen" declared implicitly
+      debug_len = strlen((char *)&software_version[0]);
+Src\system_start.c(309): warning:  #223-D: function "memset" declared implicitly
+        memset(&Serial_number[0],0,50);
+Src\system_start.c: 8 warnings, 0 errors
+compiling sharp_air.c...
+Src\sharp_air.c(53): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\sharp_air.c(54): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\sharp_air.c(67): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\sharp_air.c(68): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\sharp_air.c(216): warning:  #223-D: function "memset" declared implicitly
+        memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+Src\sharp_air.c(222): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+Src\sharp_air.c(233): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+Src\sharp_air.c: 7 warnings, 0 errors
+compiling REETECH_AIR.c...
+Src\REETECH_AIR.c(51): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\REETECH_AIR.c(63): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\REETECH_AIR.c(64): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\REETECH_AIR.c(201): warning:  #223-D: function "memset" declared implicitly
+        memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+Src\REETECH_AIR.c(207): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+Src\REETECH_AIR.c(218): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+Src\REETECH_AIR.c: 6 warnings, 0 errors
+compiling FUNIKI_AIR.c...
+Src\FUNIKI_AIR.c(47): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\FUNIKI_AIR.c(48): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\FUNIKI_AIR.c(61): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\FUNIKI_AIR.c(62): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\FUNIKI_AIR.c(203): warning:  #223-D: function "memset" declared implicitly
+        memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+Src\FUNIKI_AIR.c(209): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+Src\FUNIKI_AIR.c(220): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+Src\FUNIKI_AIR.c: 7 warnings, 0 errors
+compiling MITSUMISHI_AIR.c...
+Src\MITSUMISHI_AIR.c(48): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\MITSUMISHI_AIR.c(63): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\MITSUMISHI_AIR.c(64): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\MITSUMISHI_AIR.c(195): warning:  #223-D: function "memset" declared implicitly
+        memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+Src\MITSUMISHI_AIR.c(201): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+Src\MITSUMISHI_AIR.c(212): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+Src\MITSUMISHI_AIR.c: 6 warnings, 0 errors
+compiling GENERAL_AIR.c...
+Src\GENERAL_AIR.c(49): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\GENERAL_AIR.c(70): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\GENERAL_AIR.c(71): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\GENERAL_AIR.c(220): warning:  #223-D: function "memset" declared implicitly
+        memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+Src\GENERAL_AIR.c(226): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+Src\GENERAL_AIR.c(237): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+Src\GENERAL_AIR.c: 6 warnings, 0 errors
+compiling NAGAKAWA_LC.c...
+Src\NAGAKAWA_LC.c(49): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\NAGAKAWA_LC.c(63): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\NAGAKAWA_LC.c(64): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\NAGAKAWA_LC.c(195): warning:  #223-D: function "memset" declared implicitly
+        memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+Src\NAGAKAWA_LC.c(201): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+Src\NAGAKAWA_LC.c(212): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+Src\NAGAKAWA_LC.c: 6 warnings, 0 errors
+compiling NAGAKAWA_LM.c...
+Src\NAGAKAWA_LM.c(49): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\NAGAKAWA_LM.c(63): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\NAGAKAWA_LM.c(64): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\NAGAKAWA_LM.c(196): warning:  #223-D: function "memset" declared implicitly
+        memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+Src\NAGAKAWA_LM.c(202): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+Src\NAGAKAWA_LM.c(213): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+Src\NAGAKAWA_LM.c: 6 warnings, 0 errors
+compiling MITSUMISHI_HEAVY_INDUSTRIES.c...
+Src\MITSUMISHI_HEAVY_INDUSTRIES.h(39): warning:  #1295-D: Deprecated declaration control_air_mitsubishi_heavy_industries - give arg types
+  void control_air_mitsubishi_heavy_industries();
+Src\MITSUMISHI_HEAVY_INDUSTRIES.c(49): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\MITSUMISHI_HEAVY_INDUSTRIES.c(64): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\MITSUMISHI_HEAVY_INDUSTRIES.c(65): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\MITSUMISHI_HEAVY_INDUSTRIES.c(196): warning:  #223-D: function "memset" declared implicitly
+        memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+Src\MITSUMISHI_HEAVY_INDUSTRIES.c(202): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+Src\MITSUMISHI_HEAVY_INDUSTRIES.c(213): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+Src\MITSUMISHI_HEAVY_INDUSTRIES.c: 7 warnings, 0 errors
+compiling PANASONIC.c...
+Src\PANASONIC.c(50): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\PANASONIC.c(66): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\PANASONIC.c(67): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\PANASONIC.c(203): warning:  #223-D: function "memset" declared implicitly
+        memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+Src\PANASONIC.c(209): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+Src\PANASONIC.c(220): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+Src\PANASONIC.c: 6 warnings, 0 errors
+compiling REETECH_YKR.c...
+Src\REETECH_YKR.c(49): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\REETECH_YKR.c(65): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\REETECH_YKR.c(66): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\REETECH_YKR.c(196): warning:  #223-D: function "memset" declared implicitly
+        memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+Src\REETECH_YKR.c(202): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+Src\REETECH_YKR.c(213): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+Src\REETECH_YKR.c: 6 warnings, 0 errors
+compiling CARRIER.c...
+Src\CARRIER.c(50): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\CARRIER.c(64): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\CARRIER.c(65): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\CARRIER.c(195): warning:  #223-D: function "memset" declared implicitly
+        memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+Src\CARRIER.c(201): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+Src\CARRIER.c(212): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+Src\CARRIER.c: 6 warnings, 0 errors
+compiling GREE.c...
+Src\GREE.c(49): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\GREE.c(62): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\GREE.c(63): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\GREE.c(202): warning:  #223-D: function "memset" declared implicitly
+        memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+Src\GREE.c(208): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+Src\GREE.c(219): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+Src\GREE.c: 6 warnings, 0 errors
+compiling GALANZ.c...
+Src\GALANZ.c(50): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\GALANZ.c(66): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\GALANZ.c(67): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\GALANZ.c(195): warning:  #223-D: function "memset" declared implicitly
+        memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+Src\GALANZ.c(201): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+Src\GALANZ.c(212): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+Src\GALANZ.c: 6 warnings, 0 errors
+compiling NAGAKAWA_R51M.c...
+Src\NAGAKAWA_R51M.c(49): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\NAGAKAWA_R51M.c(63): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\NAGAKAWA_R51M.c(64): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\NAGAKAWA_R51M.c(158): warning:  #223-D: function "start_condition_carrier" declared implicitly
+        start_condition_carrier();
+Src\NAGAKAWA_R51M.c(190): warning:  #223-D: function "memset" declared implicitly
+        memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+Src\NAGAKAWA_R51M.c(196): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+Src\NAGAKAWA_R51M.c(207): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+Src\NAGAKAWA_R51M.c: 7 warnings, 0 errors
+compiling SAMSUNG.c...
+Src\SAMSUNG.c(50): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\SAMSUNG.c(63): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\SAMSUNG.c(64): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\SAMSUNG.c(211): warning:  #223-D: function "memset" declared implicitly
+        memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+Src\SAMSUNG.c(217): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+Src\SAMSUNG.c(228): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+Src\SAMSUNG.c: 6 warnings, 0 errors
+compiling LG.c...
+Src\LG.c(48): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\LG.c(70): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\LG.c(71): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\LG.c(201): warning:  #223-D: function "memset" declared implicitly
+        memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+Src\LG.c(207): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+Src\LG.c(218): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+Src\LG.c: 6 warnings, 0 errors
+compiling TCL.c...
+Src\TCL.c(49): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\TCL.c(72): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf = 0;
+Src\TCL.c(73): warning:  #177-D: variable "crc_recal"  was declared but never referenced
+        uint32_t crc_recal = 0;
+Src\TCL.c(204): warning:  #223-D: function "memset" declared implicitly
+        memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+Src\TCL.c(210): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+Src\TCL.c(221): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+Src\TCL.c: 6 warnings, 0 errors
+compiling DAIKIN_AIR.c...
+Src\DAIKIN_AIR.c(16): error:  #20: identifier "shar_air" is undefined
+  uint8_t air_id = shar_air ;
+Src\DAIKIN_AIR.c(55): warning:  #550-D: variable "buf"  was set but never used
+        uint8_t buf = 0;
+Src\DAIKIN_AIR.c(358): warning:  #223-D: function "memset" declared implicitly
+        memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+Src\DAIKIN_AIR.c(364): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+Src\DAIKIN_AIR.c(375): warning:  #223-D: function "memcpy" declared implicitly
+                memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+Src\DAIKIN_AIR.c: 4 warnings, 1 error
+compiling stm32f0xx_hal.c...
+compiling stm32f0xx_hal_adc.c...
+compiling stm32f0xx_hal_adc_ex.c...
+compiling stm32f0xx_hal_cec.c...
+compiling stm32f0xx_hal_comp.c...
+compiling stm32f0xx_hal_cortex.c...
+compiling stm32f0xx_hal_crc.c...
+compiling stm32f0xx_hal_crc_ex.c...
+compiling stm32f0xx_hal_dac.c...
+compiling stm32f0xx_hal_dac_ex.c...
+compiling stm32f0xx_hal_dma.c...
+compiling stm32f0xx_hal_flash.c...
+compiling stm32f0xx_hal_flash_ex.c...
+compiling stm32f0xx_hal_gpio.c...
+compiling stm32f0xx_hal_i2c.c...
+compiling stm32f0xx_hal_i2c_ex.c...
+compiling stm32f0xx_hal_i2s.c...
+compiling stm32f0xx_hal_irda.c...
+compiling stm32f0xx_hal_iwdg.c...
+compiling stm32f0xx_hal_msp_template.c...
+compiling stm32f0xx_hal_pcd.c...
+compiling stm32f0xx_hal_pcd_ex.c...
+compiling stm32f0xx_hal_pwr.c...
+compiling stm32f0xx_hal_pwr_ex.c...
+compiling stm32f0xx_hal_rcc.c...
+compiling stm32f0xx_hal_rcc_ex.c...
+compiling stm32f0xx_hal_rtc.c...
+compiling stm32f0xx_hal_rtc_ex.c...
+compiling stm32f0xx_hal_smartcard.c...
+compiling stm32f0xx_hal_smartcard_ex.c...
+compiling stm32f0xx_hal_smbus.c...
+compiling stm32f0xx_hal_spi.c...
+compiling stm32f0xx_hal_spi_ex.c...
+compiling stm32f0xx_hal_tim.c...
+compiling stm32f0xx_hal_tim_ex.c...
+compiling stm32f0xx_hal_tsc.c...
+compiling stm32f0xx_hal_uart.c...
+compiling stm32f0xx_hal_uart_ex.c...
+compiling stm32f0xx_hal_usart.c...
+compiling stm32f0xx_hal_wwdg.c...
+compiling stm32f0xx_ll_adc.c...
+compiling stm32f0xx_ll_comp.c...
+compiling stm32f0xx_ll_crc.c...
+compiling stm32f0xx_ll_crs.c...
+compiling stm32f0xx_ll_dac.c...
+compiling stm32f0xx_ll_dma.c...
+compiling stm32f0xx_ll_exti.c...
+compiling stm32f0xx_ll_gpio.c...
+compiling stm32f0xx_ll_i2c.c...
+compiling stm32f0xx_ll_pwr.c...
+compiling stm32f0xx_ll_rcc.c...
+compiling stm32f0xx_ll_rtc.c...
+compiling stm32f0xx_ll_spi.c...
+compiling stm32f0xx_ll_tim.c...
+compiling stm32f0xx_ll_usart.c...
+compiling stm32f0xx_ll_utils.c...
+compiling system_stm32f0xx.c...
+assembling startup_stm32f030x8.s...
+linking...
+.\Objects\T6_H01_F50_R00.axf: error: L6002U: Could not open file .\objects\daikin_air.o: No such file or directory
+Finished: 0 information, 0 warning, 0 error and 1 fatal error messages.
+".\Objects\T6_H01_F50_R00.axf" - 2 Error(s), 128 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.8.0.pack
+                ARM.CMSIS.5.8.0
+                CMSIS (Common Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.5.0
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.STM32F0xx_DFP.2.1.0.pack
+                Keil.STM32F0xx_DFP.2.1.0
+                STMicroelectronics STM32F0 Series Device Support, Drivers and Examples
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_Target_1
+  C:\Users\PhongVu\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include
+  C:\Users\PhongVu\AppData\Local\Arm\Packs\Keil\STM32F0xx_DFP\2.1.0\Drivers\CMSIS\Device\ST\STM32F0xx\Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.5.0
+Target not created.
+Build Time Elapsed:  00:01:01
+</pre>
+</body>
+</html>

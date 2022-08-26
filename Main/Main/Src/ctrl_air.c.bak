@@ -1,0 +1,1159 @@
+#include "do.h"
+#include "time.h"
+#include "stm32f0xx_hal_gpio.h"
+#include "rs485.h"
+#include "data_base.h"
+#include "temperature.h"
+#include "ctrl_air.h"
+#include "system_start.h"
+uint32_t last_time_ctrl = 0;
+static uint8_t check_request = 0;
+uint8_t status_air = 0x00; /* dieu hoa dang tat */
+static 	uint32_t number_check_pass = 0;
+static  uint32_t number_check_false = 0;
+uint8_t error_air_module = 0;
+extern IWDG_HandleTypeDef 	hwwdg;
+uint8_t air_id =  SHARP_AIR;
+extern uint8_t re_ctrl;
+/* khai bao cmd to get data */
+cmd_ctrl_air_t air_cmd;
+//extern uint8_t alarm_air;
+/* air on at 23C and cool mode */
+const cmd_ctrl_air_t table_control[NUMBER_CMD_CTRL] ={
+								        {SHARP_AIR,SHARP_AIR_OFF,{0xAA,0x5A,0xCF,0x10,0x7C,0x21,0x72,0x00,0x08,0x80,0x00,0xE0,0xF1},SHARP_CMD_LEN},	\
+												{SHARP_AIR,SHARP_AIR_ON,{0xAA,0x5A,0xCF,0x10,0xC8,0x11,0x22,0x00,0x08,0x80,0x00,0xE0,0x61},SHARP_CMD_LEN},	\
+												{DAIKIN_AIR_ARC433A46,DAIKIN_ARC433A46_OFF,{0x11,0xDA,0x27,0x00,0xC5,0x00,0x00,0xD7,0x11,0xDA,0x27,0x00,0x42,0x00,0x00,0x54,0x11,0xDA,0x27,0x00,0x00,0x08,0x2E,0x00,0xA0,0x00,0x00,0x06,0x60,0x00,0x00,0xC0,0x00,0x00,0x0E},DAIKIN_ARC433A46_CMD_LEN},	\
+												{DAIKIN_AIR_ARC433A46,DAIKIN_ARC433A46_ON, {0x11,0xDA,0x27,0x00,0xC5,0x00,0x00,0xD7,0x11,0xDA,0x27,0x00,0x42,0x04,0x00,0x58,0x11,0xDA,0x27,0x00,0x00,0x39,0x2E,0x00,0xA0,0x00,0x00,0x06,0x60,0x00,0x00,0xC0,0x00,0x00,0x3F},DAIKIN_ARC433A46_CMD_LEN},	\
+												{DAIKIN_AIR_ARC423A5,DAIKIN_ARC423A5_OFF,{0x11,0xDA,0x27,0xF0,0x0D,0x00,0x0F,0x11,0xDA,0x27,0x00,0xD3,0x30,0xF1,0x00,0x00,0x1A,0x03,0x08,0x2B},DAIKIN_ARC423A5_CMD_LEN},	\
+												{DAIKIN_AIR_ARC423A5,DAIKIN_ARC423A5_ON, {0x11,0xDA,0x27,0xF0,0x0D,0x00,0x0F,0x11,0xDA,0x27,0x00,0xD3,0x31,0x41,0x00,0x00,0x1A,0x07,0x08,0x80},DAIKIN_ARC423A5_CMD_LEN},	\
+												{REETECH_AIR,REETECH_OFF,{0x4D,0xB2,0xDE,0x21,0x07,0xF8},REETECH_CMD_LEN},	\
+												{REETECH_AIR,REETECH_ON, {0x4D,0xB2,0xF8,0x07,0x1C,0xE3},REETECH_CMD_LEN},	\
+												{FUNIKI_AIR,DAIKIN_FUNIKI_OFF,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x38,0x00,0x26,0xA5,0x03},FUNIKI_CMD_LEN},	\
+												{FUNIKI_AIR,DAIKIN_FUNIKI_ON, {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x3A,0x00,0x27,0xA5,0x06},FUNIKI_CMD_LEN}, /* 23C )N*/		
+												{MITSUMISHI_AIR,MITSUBISHI_OFF,{0x23,0xCB,0x26,0x01,0x00,0x00,0x18,0x02,0x36,0x63,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xC8},MITSUMISHI_CMD_LEN},	\
+												{MITSUMISHI_AIR,MITSUBISHI_ON, {0x23,0xCB,0x26,0x01,0x00,0x20,0x18,0x02,0x36,0x63,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xE8},MITSUMISHI_CMD_LEN}, /* 23C )N*/	
+												{GENERAL_AIR,GENERAL_OFF,{0x14,0x63,0x00,0x10,0x10,0x02},GENERAL_CMD_OFF_LEN},	\
+												{GENERAL_AIR,GENERAL_ON, {0x14,0x63,0x00,0x10,0x10,0xFC,0x08,0x30,0x21,0x01,0x01,0x00,0x00,0x00,0xAD},GENERAL_CMD_ON_LEN},	\
+												{NAGAKAWA_LC,NAGAKAWA_LC_OFF,{0x23,0xCB,0x26,0x01,0x00,0x20,0x03,0x0D,0x45,0x00,0x00,0x00,0x00,0x8A},NAGAKAWA_LC_CMD_LEN},	\
+												{NAGAKAWA_LC,NAGAKAWA_LC_ON, {0x23,0xCB,0x26,0x01,0x00,0x24,0x03,0x08,0x45,0x00,0x00,0x00,0x00,0x89},NAGAKAWA_LC_CMD_LEN},	\
+												{NAGAKAWA_LM,NAGAKAWA_LM_OFF,{0x23,0xCB,0x26,0x02,0x00,0x40,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x65,0x23,0xCB,0x26,0x01,0x00,0x20,0x03,0x0D,0x05,0x00,0x00,0x00,0x80,0xCA},NAGAKAWA_LM_CMD_LEN},	\
+												{NAGAKAWA_LM,NAGAKAWA_LM_ON, {0x23,0xCB,0x26,0x02,0x00,0x40,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x65,0x23,0xCB,0x26,0x01,0x00,0x24,0x03,0x08,0x05,0x00,0x00,0x00,0x80,0xC9},NAGAKAWA_LM_CMD_LEN},	\
+												{MITSUMISHI_HEAVY_INDUSTRIES,MITSUBISHI_HEAVY_INDUSTRIES_OFF,{0x52,0xAE,0xC3,0x26,0xD9,0xFD,0x02,0xE7,0x18,0xEE,0x11},MITSUBISHI_HEAVY_INDUSTRIES_CMD_OFF_LEN},	\
+												{MITSUMISHI_HEAVY_INDUSTRIES,MITSUBISHI_HEAVY_INDUSTRIES_ON, {0x52,0xAE,0xC3,0x26,0xD9,0xFD,0x02,0xE7,0x18,0xE6,0x19},MITSUBISHI_HEAVY_INDUSTRIES_CMD_ON_LEN},	\
+												{PANASONIC,PANASONIC_OFF,{0x02,0x20,0xE0,0x04,0x00,0x00,0x00,0x06,0x02,0x20,0xE0,0x04,0x00,0x30,0x24,0x80,0x73,0x00,0x00,0x06,0x60,0x00,0x00,0x85,0x00,0x00,0x38},PANASONIC_CMD_OFF_LEN},	\
+												{PANASONIC,PANASONIC_ON, {0x02,0x20,0xE0,0x04,0x00,0x00,0x00,0x06,0x02,0x20,0xE0,0x04,0x00,0x31,0x24,0x80,0x73,0x00,0x00,0x06,0x60,0x00,0x00,0x85,0x00,0x00,0x39},PANASONIC_CMD_ON_LEN},	\
+												{REETECH_YKR,REETECH_YKR_OFF,{0xC3,0x57,0xE0,0x00,0x20,0x00,0x20,0x00,0x00,0x00,0x00,0x05,0x3F},REETECH_YKR_OFF_LEN},	\
+												{REETECH_YKR,REETECH_YKR_ON, {0xC3,0x57,0xE0,0x00,0x20,0x40,0x20,0x00,0x00,0x20,0x00,0x05,0x9F},REETECH_YKR_ON_LEN},	\
+												{CARRIER,CARRIER_OFF,{0x4D,0xB2,0xDE,0x21,0x07,0xF8},CARRIER_OFF_LEN},	\
+												{CARRIER,CARRIER_ON, {0x4D,0xB2,0xFD,0x02,0x08,0xF7},CARRIER_ON_LEN},	\
+												{GREE,GREE_OFF,{0x31,0x09,0x70,0x50,0x00,0x20,0x00,0x60},GREE_OFF_LEN},	\
+												{GREE,GREE_ON, {0x39,0x02,0x70,0x50,0x00,0x20,0x00,0x70},GREE_ON_LEN},	\
+												{GALANZ,GALANZ_OFF,{0x23,0xCB,0x26,0x01,0x00,0x20,0x03,0x0D,0x25,0x00,0x00,0x0F,0x04,0x7D},GALANZ_OFF_LEN},	\
+												{GALANZ,GALANZ_ON, {0x23,0xCB,0x26,0x01,0x00,0x24,0x03,0x0D,0x0B,0x00,0x00,0x01,0x14,0x69},GALANZ_ON_LEN},	\
+												{NAGAKAWA_R51M,NAGAKAWA_R51M_OFF,{0x4D,0xB2,0xDE,0x21,0x07,0xF8},NAGAKAWA_R51M_OFF_LEN},	\
+												{NAGAKAWA_R51M,NAGAKAWA_R51M_ON, {0x4D,0xB2,0xFC,0x03,0x08,0xF7},NAGAKAWA_R51M_ON_LEN},
+												{SAMSUNG,SAMSUNG_OFF,{0x02,0xB2,0x0F,0x00,0x00,0x00,0xC0,0x01,0xD2,0x0F,0x00,0x00,0x00,0x00,0x01,0xE2,0xFE,0x71,0x20,0x1B,0xC0},SAMSUNG_OFF_LEN},	\
+												{SAMSUNG,SAMSUNG_ON, {0x02,0x92,0x0F,0x00,0x00,0x00,0xF0,0x01,0xD2,0x0F,0x00,0x00,0x00,0x00,0x01,0xC2,0xFE,0x71,0x40,0x1B,0xF0},SAMSUNG_ON_LEN},
+												{LG,SAMSUNG_OFF,{0x08,0x08,0x00,0x00,0x03,0x04,0x07},SAMSUNG_OFF_LEN},	\
+												{LG,SAMSUNG_ON, {0x08,0x08,0x00,0x08,0x03,0x04,0x0F},SAMSUNG_ON_LEN},	\
+												{TCL,TCL_OFF,{0x23,0xCB,0x26,0x01,0x00,0x20,0x03,0x0D,0x45,0x00,0x00,0x00,0x80,0x0A},TCL_CMD_LEN},	\
+												{TCL,TCL_ON, {0x23,0xCB,0x26,0x01,0x00,0x24,0x03,0x0D,0x45,0x00,0x00,0x00,0x80,0x0E},TCL_CMD_LEN}
+};
+#define BYTE_TEMP_NAGAKAWA_R51M	4
+#define BYTE_TEMP_GALANZ	7
+#define BYTE_TEMP_REETECH	4
+#define TEMP_INIT_DEFAULT_REETECH	17 /* thap nhat 17 C*/
+const uint8_t temp_reetech[15] ={0x10,0x18,0x1C,0x014,0x16,0x1E,0x1A,0x12,0x13,0x1B,0x19,0x11,0x15,0x1D};
+const uint8_t temp_carrier[13] ={0x08,0x0C,0x04,0x06,0x0E,0x0A,0x02,0x03,0x0B,0x09,0x01,0x05,0x0D};
+const uint8_t temp_gree[13][2] ={{0x02,0x70},{0x03,0x80},{0x04,0x90},{0x05,0xA0},{0x06,0xB0},{0x07,0xC0},{0x08,0xD0},{0x09,0xE0},{0x0A,0xF0},{0x0B,0x00},{0x0C,0x10},{0x0D,0x20},{0x0E,0x30}};
+const uint8_t temp_samsung[13][2] ={{0xC2,0x20},{0xB2,0x30},{0xC2,0x40},{0xB2,0x50},{0xB2,0x60},{0xA2,0x70},{0xC2,0x80},{0xB2,0x90},{0xB2,0xA0},{0xA2,0xB0},{0xB2,0xC0},{0xA2,0xD0},{0xA2,0xE0}};
+#define BYTE_TEMP_FUNIKI	9
+#define BYTE_TEMP_MITSUBISHI	7
+#define BYTE_TEMP_GENERAL	8
+#define BYTE_TEMP_NAGAKAWA_LC	7
+#define BYTE_TEMP_NAGAKAWA_LM	21
+#define BYTE_TEMP_MITSUBISHI_HEAVY_INDUSTRIES	9
+#define BYTE_TEMP_PANASONIC 14
+#define PANASONIC_HEADER_LEN	8
+#define BYTE_TEMP_REETECH_YKR	1
+#define BYTE_TEMP_CARRIER	4
+#define BYTE_TEMP_GREE	1
+#define BYTE_CRC_GREE	7
+#define BYTE1_TEMP_SAMSUNG	15
+#define BYTE2_TEMP_SAMSUNG	18
+#define BYTE_TEMP_LG	4
+#define BYTE_TEMP_TCL	7
+
+void set_request_check_air(void)
+{
+	check_request = 1;
+	/* Xoa cac bien dem pass va false */
+	number_check_pass = 0;		
+}
+void clear_request_check_air(void)
+{
+	check_request = 0;
+	/* Xoa cac bien dem pass va false */
+	number_check_pass = 0;	
+}
+uint8_t get_request_check_air(void)
+{
+	return check_request;
+}
+
+void set_temp(uint8_t temp)
+{
+	uint8_t buf = 0;
+	uint32_t crc_recal = 0;
+	
+	switch(air_cmd.air_id)
+	{
+		case SHARP_AIR: /* dieu hoa sharp */
+			#if 0
+			buf = 0xC0 + (temp -15);
+			air_cmd.cmd_content[4] = buf;
+			#endif
+			/* Tinh lai crc */
+		break;
+		case DAIKIN_AIR_ARC433A46: /* dieu hoa sharp */
+			buf = air_cmd.cmd_content[22] = temp << 1;
+			/* tinh lai crc */
+			for(uint8_t count  = 16; count < 34; count ++)
+				crc_recal += air_cmd.cmd_content[count];
+				air_cmd.cmd_content[DAIKIN_ARC433A46_CMD_LEN - 1] = (uint8_t)(crc_recal & 0xff);	
+		break;
+		case DAIKIN_AIR_ARC423A5: 
+			buf = air_cmd.cmd_content[16] = 0x10 + (temp - 18) * 2;
+			/* tinh lai crc */
+			for(uint8_t count  = 7; count < 19; count ++)
+				crc_recal += air_cmd.cmd_content[count];
+				air_cmd.cmd_content[DAIKIN_ARC423A5_CMD_LEN - 1] = (uint8_t)(crc_recal & 0xff);	
+		break;
+		case REETECH_AIR:
+			buf = temp_reetech[temp - TEMP_INIT_DEFAULT_REETECH];
+			air_cmd.cmd_content[BYTE_TEMP_REETECH] = buf;
+			/* tinh lai CRC */
+			air_cmd.cmd_content[BYTE_TEMP_REETECH + 1] = ~buf; /* dao byte nhiet do*/
+			break;
+		case FUNIKI_AIR:
+			/* tinh toan */
+			air_cmd.cmd_content[BYTE_TEMP_FUNIKI] &= 0xE0; /* Xoa 5 bits nhiet do*/
+			air_cmd.cmd_content[BYTE_TEMP_FUNIKI] |= (temp - 16); /* Them 5 bits nhiet do */
+			/* Tinh lai crc */
+			air_cmd.cmd_content[FUNIKI_CMD_LEN - 1] = (temp - 17);
+			break;		
+		case MITSUMISHI_AIR:
+			/* tinh toan */
+		  buf =  air_cmd.cmd_content[BYTE_TEMP_MITSUBISHI];
+			buf &= 0xF0; /* Xoa 4 bits thap */
+			buf |= (temp - 16); /* Them 5 bits nhiet do */
+		  air_cmd.cmd_content[BYTE_TEMP_MITSUBISHI] = buf;
+			/* Tinh lai crc */
+			air_cmd.cmd_content[MITSUMISHI_CMD_LEN - 1] = 0xE6 +(temp -16);			
+			break;
+		case GENERAL_AIR:
+			/* tinh toan */
+				buf =  ((temp - 16) << 4)|0x01; /* dich len 4 bits */
+				air_cmd.cmd_content[BYTE_TEMP_GENERAL] = buf;
+				/* Tinh crc */
+				if(temp == 29){
+					buf = 0xFD;
+				}else if(temp == 30){
+					buf = 0xED;
+				}else{
+					buf = ((28 -temp) << 4)|0x0D;
+				}
+				/* Tinh lai crc */
+				air_cmd.cmd_content[GENERAL_CMD_ON_LEN - 1] = buf;					
+			break;	
+		case NAGAKAWA_LC:
+			/* tinh toan */
+				buf =  (31 - temp);
+				air_cmd.cmd_content[BYTE_TEMP_NAGAKAWA_LC] = buf;
+				/* Tinh lai crc */
+				buf = 0x90 -(temp -16);
+				air_cmd.cmd_content[NAGAKAWA_LC_CMD_LEN - 1] = buf;					
+			break;	
+		case NAGAKAWA_LM:
+			/* tinh toan */
+				buf =  (31 - temp);
+				air_cmd.cmd_content[BYTE_TEMP_NAGAKAWA_LM] = buf;
+				/* Tinh lai crc */
+				buf = 0xD0 -(temp -16);
+				air_cmd.cmd_content[NAGAKAWA_LM_CMD_LEN - 1] = buf;							
+			break;			
+		case MITSUMISHI_HEAVY_INDUSTRIES:
+				/* tinh toan */
+				buf =   0x0F & (temp -17);
+				buf = ( ~ buf) & 0x0F; 
+				buf = (buf << 4);
+				buf |= air_cmd.cmd_content[BYTE_TEMP_MITSUBISHI_HEAVY_INDUSTRIES] & 0x0F;
+				air_cmd.cmd_content[BYTE_TEMP_MITSUBISHI_HEAVY_INDUSTRIES] = buf;
+				air_cmd.cmd_content[BYTE_TEMP_MITSUBISHI_HEAVY_INDUSTRIES + 1] = ~buf; 				/* Tinh lai crc */
+			break;
+		case PANASONIC:
+				/* tinh toan */
+				buf =   temp * 2;
+				air_cmd.cmd_content[BYTE_TEMP_PANASONIC] = buf;
+				/* tinh lai crc */
+				buf = 0x00;
+				for(uint8_t count = PANASONIC_HEADER_LEN; count < PANASONIC_CMD_ON_LEN - 1; count ++)
+					buf += air_cmd.cmd_content[count];
+				air_cmd.cmd_content[PANASONIC_CMD_ON_LEN - 1] = buf;
+			break;		
+		case REETECH_YKR:
+				/* tinh toan */
+				buf =   (air_cmd.cmd_content[BYTE_TEMP_REETECH_YKR] & 0x07) | (temp - 8);
+				air_cmd.cmd_content[BYTE_TEMP_REETECH_YKR] = buf;
+				/* tinh lai crc */
+				buf = 0x00;
+				for(uint8_t count = 0; count < REETECH_YKR_ON_LEN - 1; count ++)
+					buf += air_cmd.cmd_content[count];
+				air_cmd.cmd_content[REETECH_YKR_ON_LEN - 1] = buf;
+			break;		
+		case CARRIER:
+				/* tinh toan */
+				buf =   temp_carrier[temp - 18];
+				air_cmd.cmd_content[BYTE_TEMP_CARRIER] = buf;
+				/* tinh lai crc */
+				buf = (~buf) & 0x0FF;
+				air_cmd.cmd_content[BYTE_TEMP_CARRIER] = buf;
+			break;			
+		case GREE:
+				/* tinh toan */
+				buf =   temp_gree[temp - 18][0];
+				air_cmd.cmd_content[BYTE_TEMP_GREE] = buf;
+				/* tinh lai crc */
+				buf =   temp_gree[temp - 18][1];
+				air_cmd.cmd_content[BYTE_CRC_GREE] = buf;	
+			break;			
+		case GALANZ:
+				/* tinh toan */
+				buf =   31 - temp;
+				air_cmd.cmd_content[BYTE_TEMP_GALANZ] = buf;
+				/* tinh lai crc */
+				buf = 0x00;
+				for(uint8_t count = 0; count < GALANZ_ON_LEN - 1; count ++)
+					buf += air_cmd.cmd_content[count];
+				air_cmd.cmd_content[GALANZ_ON_LEN - 1] = buf;
+			break;		
+		case NAGAKAWA_R51M:
+				/* tinh toan */
+				buf =   temp_carrier[temp - 18];
+				air_cmd.cmd_content[BYTE_TEMP_NAGAKAWA_R51M] = buf;
+				/* tinh lai crc */
+				buf = (~buf) & 0x0FF;
+				air_cmd.cmd_content[BYTE_TEMP_NAGAKAWA_R51M + 1] = buf;
+			break;
+		case SAMSUNG:
+				/* tinh toan */
+				buf =   temp_samsung[temp - 18][0];
+				air_cmd.cmd_content[BYTE1_TEMP_SAMSUNG] = buf;
+				buf =   temp_samsung[temp - 18][1];
+				air_cmd.cmd_content[BYTE2_TEMP_SAMSUNG] = buf;		
+			break;					
+		case LG:
+				/* tinh toan */
+				buf =   temp - 15;
+				air_cmd.cmd_content[BYTE_TEMP_LG] = buf;
+				/* Tinh lai crc */
+				buf = 0x00;
+				//debug_len = 0;
+				for(uint8_t count = 0; count < LG_ON_LEN - 1; count ++)
+				{
+					buf += air_cmd.cmd_content[count];
+					//debug_len += sprintf((char *)&debug_arr[debug_len],"%d ", air_cmd.cmd_content[count]);
+				}
+				air_cmd.cmd_content[LG_ON_LEN - 1] = (buf & 0x0F);		
+				//debug_len += sprintf((char *)&debug_arr[debug_len],"%d\n", air_cmd.cmd_content[LG_ON_LEN - 1]);
+				//debug_send(&debug_arr[0],debug_len);				
+			break;	
+		case TCL:
+//				debug_len = sprintf((char *)&debug_arr[0],"TCL \n");
+//				debug_send(&debug_arr[0],debug_len);			
+			/* tinh toan */
+				buf =  (31 - temp);
+				air_cmd.cmd_content[BYTE_TEMP_TCL] = buf;
+				/* Tinh lai crc */
+				buf = 0;
+			  debug_len = 0;
+				for(uint8_t count = 0; count < TCL_CMD_LEN -1; count ++){
+					buf += air_cmd.cmd_content[count];
+					//debug_len += sprintf((char *)&debug_arr[debug_len],"%d %d ",buf,air_cmd.cmd_content[count]);
+				}
+				//debug_len += sprintf((char *)&debug_arr[debug_len],"\n");
+				air_cmd.cmd_content[TCL_CMD_LEN - 1] = (uint8_t)buf;
+				//debug_send(&debug_arr[0],debug_len);	
+			break;					
+	}
+}
+void set_mode(uint8_t mode)
+{
+	uint8_t buf = 0;
+	uint32_t crc_recal = 0;
+	switch(air_cmd.air_id)
+	{
+		case SHARP_AIR: /* dieu hoa sharp */
+			#if 0
+			if(mode == COOL_MODE)
+				air_cmd.cmd_content[6] = 0x22;
+			else if(mode == DRY_MODE)
+				air_cmd.cmd_content[6] = 0x23;
+			else /* auto mode */
+				air_cmd.cmd_content[6] = 0x20;
+			#endif
+			/* Tinh lai crc */
+		break;
+		case DAIKIN_AIR_ARC433A46: /* dieu hoa sharp */
+			buf = air_cmd.cmd_content[21];
+			buf &= 0xf1;
+			if(mode == COOL_MODE)
+			{
+				buf |= 0x04;
+				air_cmd.cmd_content[21] = buf;
+			}
+			else if(mode == DRY_MODE)
+			{
+				buf |= 0x02;
+				air_cmd.cmd_content[21] = buf;	
+			}
+			else /* auto mode */
+			{
+				buf |= 0x00;
+				air_cmd.cmd_content[21] = buf;	
+			}
+			/* tinh lai crc */
+			for(uint8_t count  = 16; count < 34; count ++)
+				crc_recal += air_cmd.cmd_content[count];
+				air_cmd.cmd_content[DAIKIN_ARC433A46_CMD_LEN - 1] = (uint8_t)(crc_recal & 0xff);	
+		break;
+		case DAIKIN_AIR_ARC423A5: 
+			if(mode == COOL_MODE)
+			{
+				buf |= 0x31;
+				air_cmd.cmd_content[12] = buf;
+			}
+			else if(mode == DRY_MODE)
+			{
+				buf |= 0x21;
+				air_cmd.cmd_content[12] = buf;	
+			}
+			/* tinh lai crc */
+			for(uint8_t count  = 7; count < 19; count ++)
+				crc_recal += air_cmd.cmd_content[count];
+				air_cmd.cmd_content[DAIKIN_ARC423A5_CMD_LEN - 1] = (uint8_t)(crc_recal & 0xff);	
+		break;
+		case REETECH_AIR:
+			/* to do */
+			break;
+		case FUNIKI_AIR:
+			break;
+		case MITSUMISHI_AIR:
+			break;
+		case GENERAL_AIR:
+			break;
+		case NAGAKAWA_LC:
+			break;
+		case NAGAKAWA_LM:
+			break;
+		case MITSUMISHI_HEAVY_INDUSTRIES:
+			break;		
+		case PANASONIC:
+			break;		
+		case REETECH_YKR:
+			break;			
+		case CARRIER:
+			break;				
+		case GREE:
+			break;		
+		case GALANZ:
+			break;			
+		case SAMSUNG:
+			break;			
+		case LG:
+			break;
+		case TCL:
+			break;				
+	}
+}
+uint8_t check_air_operation(int16_t temp_air_door)
+{
+	int16_t max_temp = get_temp_set_air();
+//	uint32_t time_pass = 0;
+	uint32_t time_now = get_time_s();
+	#define TIME_TEST	900 /* Chi can 45 phut thoi */	
+	max_temp *= 10; /* Nhan 10 lan nhiet do dat */
+	/* Xac nhan trang thai yeu cau check */	
+	if(get_request_check_air()){
+		/* Xac nhan trang thai dieu hoa dang bat */
+		if(do_getvalue() == 1)
+		{
+			/* Xac nhan dung dieu hoa bat 20C */
+			if(get_temp_set_air() == 20)
+			{
+				/* Kiem tra nhiet do doc duoc voi nhiet do max */
+				if(temp_air_door < max_temp)
+				{
+					/* dieu hoa binh thuong */
+					number_check_pass ++;
+					if(number_check_pass >= TIME_CHECK_PASS)
+					{
+						number_check_pass = 0;
+						/* Bao dieu hoa binh thuong */
+						error_air_module &= NO_ERROR_AIR;
+						/* Xoas so lan false */
+						number_check_false = 0;
+					}else{
+						/* Khong lam gi ca */
+					}
+				}else{
+					/* Tang so lan false len, xoa ngay so lan pass */
+					number_check_false ++;
+					if(number_check_false >= TIME_TEST)
+					{
+						number_check_pass = 0;
+						/* Bao dieu hoa binh thuong */
+						error_air_module |= ERROR_AIR_OPERATION;
+						/* Xoas so lan false */
+						number_check_false = 0;
+					}else{
+						/* Khong lam gi ca */
+					}
+				}
+			}else{
+				number_check_false = 0;
+				/* O cac muc nhiet do khac 20C xet xem dieu hoa co binh thuong khong? */
+				if(max_temp >= (50 + temp_air_door))
+				{
+						/* Phai dam bao rang so thoi gian ma nhiet do dat moc nay la 10s lien tiep */
+						if(number_check_pass >= TIME_CHECK_PASS)
+						{
+							/* bao dieu hoa binh thuong */
+							error_air_module &= NO_ERROR_AIR;		
+							/* Xoa so lan pass */
+							number_check_pass = 0;
+						}else{
+							/* Chua du so lan thoa man dieu kien khang dinh dieu hoa binh thuong thi tang so lan len 1 */
+							 number_check_pass ++;					
+						}
+				}else{
+					/* Xoa co dem nhiet do dat  */
+					number_check_pass = 0;
+				}				
+			}
+		}else{
+			/* Dang tat khong tinh */
+			number_check_pass = 0;
+			number_check_false = 0;
+		}				
+	}else{
+			/* Dang tat khong tinh */
+			number_check_pass = 0;
+			number_check_false = 0;
+	}
+	return 0;
+}
+/**
+  * @brief  This function return status on/off of two Aircondition. 
+  * @param  None
+  * @retval uint8_t result
+  */
+uint8_t do_getvalue(void)
+{
+	return status_air;
+}
+
+void start_condition_sharp(void)
+{
+	AIR_HI();
+	/* tao ra 142 xung */
+	create_pulse(142);
+	AIR_LO();
+	/* delay_us 1900 us */
+	delay_us(1900);
+}	
+void stop_condition_sharp(void)
+{
+	AIR_HI();
+	/* tao ra 142 xung */
+	create_pulse(15);
+	AIR_LO();
+	/* delay_us 1900 us */
+	delay_us(3084);
+	AIR_HI();
+	delay_us(10);
+	AIR_LO();
+}
+void start_condition_reetech(void)
+{
+	AIR_HI();
+	/* tao ra 168 xung */
+	create_pulse(168);
+	AIR_LO();
+	/* delay_us 4300 us */
+	delay_us(4300);
+}
+void stop_condition_reetech(void)
+{
+	/* phat ra khoang 15 xung */
+	create_pulse(17);
+	/* ket thuc bit luon la 1 de chuan bi xung tiep theo*/
+	AIR_LO();
+	/* sau do delay_us mot hoang 492us */
+	delay_us(5300);
+}
+void start_condition_daikin(uint8_t daikin_id)
+{
+	uint8_t i = 0;
+	switch(daikin_id)
+	{
+		case DAIKIN_AIR_ARC433A46:
+			/* tao ra 6 bit 0 */
+			for(i =0; i <6 ; i++)
+			bit_0();
+			AIR_LO();
+			/* delay_us mot khoang */
+			delay_us(29150);	/* tao ra 130 xung */
+			create_pulse(130);
+			bit_1();
+		break;
+		case DAIKIN_AIR_ARC423A5:
+			AIR_LO();
+			delay_us(25450);
+			AIR_HI();	
+			//delay_us(4950);
+			create_pulse(188);
+			AIR_LO();
+			/* delay_us mot khoang */
+			delay_us(2150);	/* tao ra 130 xung */
+			AIR_HI();	
+			//delay_us(300);	/* tao ra 130 xung */
+			create_pulse(11);
+		break;
+		default:
+		break;
+	}
+	return;
+}
+
+void restart_condition_daikin(uint8_t daikin_id)
+{
+	switch(daikin_id)
+	{
+		case DAIKIN_AIR_ARC433A46:
+			bit_1();
+			AIR_LO();
+			/* delay_us mot khoang */
+			delay_us(34910);
+			/* tao ra 130 xung */
+			create_pulse(130);
+			bit_1();
+		break;
+		case DAIKIN_AIR_ARC423A5:
+			bit_1();
+			AIR_LO();
+			delay_us(25450);
+			AIR_HI();	
+			//delay_us(4950);
+			create_pulse(188);
+			AIR_LO();
+			/* delay_us mot khoang */
+			delay_us(2150);	/* tao ra 130 xung */
+			AIR_HI();	
+			//delay_us(300);	/* tao ra 130 xung */
+			create_pulse(11);
+		break;
+		default:
+		break;
+	}
+	return;	
+}
+void stop_condition_daikin(uint8_t daikin_id)
+{
+	switch(daikin_id)
+	{
+		case DAIKIN_AIR_ARC433A46:
+			bit_1();
+			AIR_LO();
+			/* delay_us 1900 us */
+			delay_us(50000);
+		break;
+		case DAIKIN_AIR_ARC423A5:
+			bit_1();
+			AIR_LO();
+			delay_us(50000);
+		break;
+		default:
+		break;
+	}
+	return;
+}
+
+void control_air_sharp(void)
+{
+	uint8_t count = 0;
+	uint8_t len = 0;
+	/* Gui cau lenh */
+	for(count = 0; count < NUMBER_REPEAT_SEND_CMD; count ++)
+	{
+		/* Gui tin hieu start */
+		start_condition_sharp();
+		/* Gui du lieu */
+		for(len = 0; len < air_cmd.len_cmd; len ++)
+			sendbyte_data(air_cmd.cmd_content[len]);
+		/* Gui stop */
+		stop_condition_sharp();
+		HAL_IWDG_Refresh(&hwwdg);
+		WATCHDOG_REFRESH();
+	}
+}
+void control_air_daikin(void)
+{
+	uint8_t count = 0;
+	uint8_t len = 0;
+	switch(air_cmd.air_id)
+	{
+		case DAIKIN_AIR_ARC433A46:
+			/* Gui cau lenh */
+			for(count = 0; count < NUMBER_REPEAT_SEND_CMD; count ++)
+			{
+				/* start condition */
+				start_condition_daikin(DAIKIN_AIR_ARC433A46);
+				/* send data 8 byte dau */
+				for(len = 0; len < 8; len ++)
+					sendbyte_data(air_cmd.cmd_content[len]);
+				/* restart */
+				restart_condition_daikin(DAIKIN_AIR_ARC433A46);
+				/* send next 8 byte tiep theo */
+				for(len = 8; len < 16; len ++)
+					sendbyte_data(air_cmd.cmd_content[len]);	
+				/* restart */
+				restart_condition_daikin(DAIKIN_AIR_ARC433A46);
+				/* send next 8 byte tiep theo */
+				for(len = 16; len < air_cmd.len_cmd; len ++)
+					sendbyte_data(air_cmd.cmd_content[len]);	
+				/* stop condition */
+				stop_condition_daikin(DAIKIN_AIR_ARC433A46);
+				HAL_IWDG_Refresh(&hwwdg);
+				WATCHDOG_REFRESH();
+			}
+			break;
+		case DAIKIN_AIR_ARC423A5:
+			/* Gui cau lenh */
+			for(count = 0; count < NUMBER_REPEAT_SEND_CMD; count ++)
+			{
+				/* start condition */
+				start_condition_daikin(DAIKIN_AIR_ARC423A5);
+				/* send data 7 byte dau */
+				for(len = 0; len < 7; len ++)
+					sendbyte_data(air_cmd.cmd_content[len]);
+				/* restart */
+				restart_condition_daikin(DAIKIN_AIR_ARC423A5);
+				/* send next 13 byte tiep theo */
+				for(len = 7; len < air_cmd.len_cmd; len ++)
+					sendbyte_data(air_cmd.cmd_content[len]);		
+				/* stop condition */
+				stop_condition_daikin(DAIKIN_AIR_ARC423A5);
+				HAL_IWDG_Refresh(&hwwdg);
+				WATCHDOG_REFRESH();
+			}
+			break;
+		default:
+			break;
+	}
+}
+void control_air_reetech()
+{
+	uint8_t count = 0;
+	uint8_t len = 0;
+	/* Gui cau lenh */
+	for(count = 0; count < NUMBER_REPEAT_SEND_CMD; count ++)
+	{
+		/* Gui tin hieu start */
+		start_condition_reetech();
+		/* Gui du lieu */
+		for(len = 0; len < air_cmd.len_cmd; len ++)
+			sendbyte_data(air_cmd.cmd_content[len]);
+		/* Gui stop */
+		stop_condition_reetech();
+		HAL_IWDG_Refresh(&hwwdg);
+		WATCHDOG_REFRESH();
+	}
+}
+
+void control_air_funiki()
+{
+	uint8_t count = 0;
+	uint8_t len = 0;
+	/* Gui cau lenh */
+	for(count = 0; count < NUMBER_REPEAT_SEND_CMD; count ++)
+	{
+		/* Gui tin hieu start */
+		start_condition_funiki();
+		/* Gui du lieu */
+		for(len = 0; len < air_cmd.len_cmd; len ++)
+			sendbyte_data(air_cmd.cmd_content[len]);
+		/* Gui stop */
+		stop_condition_funiki();
+		HAL_IWDG_Refresh(&hwwdg);
+		WATCHDOG_REFRESH();
+	}	
+}
+void control_air(uint8_t cmd, uint8_t air_id)
+{
+	last_time_ctrl = get_time_s();
+	/* Check loi truoc khi dieu khien, khi dieu hoa loi khong duoc dieu khien */
+	/* truoc khi thuc hien lenh dieu khien can kiem tra dieu kien nhiet do cua gio dieu hoa */
+	/* Lam sach buffer */
+	memset((uint8_t *)&air_cmd.cmd_content[0],0x00,MAX_LEN_CMD);
+	air_cmd.air_id = air_id;
+	air_cmd.cmd = cmd;
+	if(air_cmd.cmd)
+	{	
+		/* coppy */
+		memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2 + 1].cmd_content[0],table_control[(air_id - 1) * 2 + 1].len_cmd);
+		air_cmd.len_cmd = table_control[(air_id - 1) * 2 + 1].len_cmd;
+		/* set lai nhiet do cho dieu hoa truoc khi dieu khien */
+		set_temp(get_temp_set_air());
+		/* set mode dieu hoa truoc khi dieu khien */
+		set_mode(get_mode_control_air());
+		/* Ghi lai thoi gian tu luc bat dau on dieu hoa */
+		set_request_check_air();				
+	}
+	else
+	{
+		memcpy((uint8_t *)&air_cmd.cmd_content[0],(uint8_t *)&table_control[(air_id - 1) * 2].cmd_content[0],table_control[(air_id - 1) * 2].len_cmd);
+		air_cmd.len_cmd = table_control[(air_id - 1) * 2].len_cmd;
+		/* Xoa canh bao check dieu hoa van hanh */
+		clear_request_check_air();		
+	}
+	/* thuc hien viec dieu khien */
+	switch(air_id)
+	{
+		case SHARP_AIR:
+			control_air_sharp();
+			break;
+		case REETECH_AIR:
+			control_air_reetech();
+		break;
+		case DAIKIN_AIR_ARC423A5:
+			control_air_daikin();
+			break;
+		case DAIKIN_AIR_ARC433A46:
+			control_air_daikin();
+			break;
+		case FUNIKI_AIR:
+			 control_air_funiki();
+			break;
+		case MITSUMISHI_AIR:
+			 control_air_mitsubishi();
+			break;	
+		case GENERAL_AIR:
+			 control_air_general();
+			break;	
+		case NAGAKAWA_LC:
+			 control_air_nagakawa_lc();
+			break;
+		case NAGAKAWA_LM:
+			 control_air_nagakawa_lm();
+			break;		
+		case MITSUMISHI_HEAVY_INDUSTRIES:
+			 control_air_mitsubishi_heavy_industries();
+			break;			
+		case PANASONIC:
+			 control_air_panasonic();
+			break;				
+		case REETECH_YKR:
+			 control_air_reeteck_ykr();
+			break;	
+		case CARRIER:
+			 control_air_carrier();
+			break;	
+		case GREE:
+			 control_air_gree();
+			break;
+		case GALANZ:
+			 control_air_galanz();
+			break;	
+		case NAGAKAWA_R51M:
+			control_air_nagakawa_r51m();
+			break;
+		case SAMSUNG:
+			control_air_samsung();
+			break;	
+		case LG:
+			control_air_lg();
+			break;	
+		case TCL:
+			control_air_tcl();
+			break;
+		default:
+			break;
+	}
+	/* sau khi dieu khien gan lai trang thai cua cac dieu hoa */
+	status_air = cmd;	
+}
+
+void start_condition_funiki(void)
+{
+	AIR_HI();
+	/* tao ra 142 xung */
+	create_pulse(236);
+	AIR_LO();
+	/* delay_us 1900 us */
+	delay_us(7345);
+}	
+void stop_condition_funiki(void)
+{
+	AIR_HI();
+	/* tao ra 15 xung */
+	create_pulse(15);
+	AIR_LO();
+	/* delay_us 1900 us */
+	delay_us(7345);
+	AIR_HI();
+	/* tao ra 15 xung */
+	create_pulse(15);	
+}
+void start_condition_mitsubishi(void)
+{
+		AIR_LO();
+		/* delay_us mot khoang */
+		delay_us(3000);
+		/* tao ra 130 xung */
+		create_pulse(120);
+		delay_us(1600);	
+}
+void stop_condition_mitsubishi(void)
+{
+		bit_0();
+		AIR_LO();
+		delay_us(8200);
+}
+void control_air_mitsubishi()
+{
+		uint8_t count  = 0;
+		uint8_t len  = 0;
+		/* Gui cau lenh */
+		for(count = 0; count < NUMBER_REPEAT_SEND_CMD; count ++)
+		{
+			/* start condition */
+			start_condition_mitsubishi();
+			/* send data 8 byte dau */
+			for(len = 0; len < MITSUMISHI_CMD_LEN; len ++)
+				sendbyte_data_mitsubishi(air_cmd.cmd_content[len]);
+			stop_condition_mitsubishi();
+			HAL_IWDG_Refresh(&hwwdg);
+			WATCHDOG_REFRESH();
+		}
+}
+void control_air_mitsubishi_heavy_industries()
+{
+		uint8_t count  = 0;
+		uint8_t len  = 0;
+		/* Gui cau lenh */
+		for(count = 0; count < 2; count ++)
+		{
+			/* start condition */
+			start_condition_mitsubishi();
+			/* send data 8 byte dau */
+			for(len = 0; len < MITSUBISHI_HEAVY_INDUSTRIES_CMD_ON_LEN; len ++)
+				sendbyte_data_mitsubishi(air_cmd.cmd_content[len]);
+			stop_condition_mitsubishi();
+			HAL_IWDG_Refresh(&hwwdg);
+			WATCHDOG_REFRESH();
+			delay_us(50000);	
+		}
+}
+void start_condition_general(void)
+{
+		AIR_LO();
+		/* delay_us mot khoang */
+		delay_us(3000);
+		/* tao ra 130 xung */
+		create_pulse(120);
+		delay_us(1500);		
+}
+void stop_condition_general(void)
+{
+		bit_0();
+		AIR_LO();
+		delay_us(50000);	
+}
+void control_air_general()
+{
+		uint8_t count  = 0;
+		uint8_t len  = 0;
+		uint8_t temp = 0;
+		uint8_t group = 0;
+		/* Lay du lieu cau lenh */
+		if(air_cmd.air_id)
+		{
+			temp = get_temp_set_air();
+			if(temp == 19|| temp == 22|| temp == 24 || temp == 25 || temp == 26 || temp == 28)
+			{
+				group = TEMP_GROUP1;
+			}else{
+				group = TEMP_GROUP2;
+			}			
+		}
+		else{
+			group = TEMP_GROUP1;
+		}
+		/* Gui cau lenh */
+		for(count = 0; count < NUMBER_REPEAT_SEND_CMD; count ++)
+		{
+			/* start condition */
+			start_condition_general();
+			/* send data 8 byte dau */
+			for(len = 0; len < air_cmd.len_cmd; len ++)
+				sendbyte_data_general(air_cmd.cmd_content[len],group);
+			stop_condition_general();
+			HAL_IWDG_Refresh(&hwwdg);
+			WATCHDOG_REFRESH();
+		}	
+}
+
+void re_ctrl_air(void)
+{
+	uint8_t cmd = (do_getvalue())?CMD_ON_AIR:CMD_OFF_AIR;
+	if(re_ctrl)
+		control_air(cmd,air_id);
+}
+
+void start_condition_nagakawa(void)
+{
+		AIR_LO();
+	/* tao ra 110 xung */
+	create_pulse(115);
+	/* delay mot khoang */
+	delay_us(1445);	
+}
+void stop_condition_nagakawa(void)
+{
+		bit_0();
+		AIR_LO();
+		delay_us(71000);	
+}
+void control_air_nagakawa_lc()
+{
+		uint8_t count  = 0;
+		uint8_t len  = 0;
+		/* Gui cau lenh */
+		for(count = 0; count < NUMBER_REPEAT_SEND_CMD; count ++)
+		{
+			/* start condition */
+			start_condition_nagakawa();
+			/* send data 8 byte dau */
+			for(len = 0; len < NAGAKAWA_LC_CMD_LEN; len ++)
+				sendbyte_data_nagakawa(air_cmd.cmd_content[len]);
+			stop_condition_nagakawa();
+			HAL_IWDG_Refresh(&hwwdg);
+			WATCHDOG_REFRESH();
+		}
+}
+void control_air_nagakawa_lm()
+{
+		uint8_t len  = 0;
+		/* Package 1 */
+		/* start condition */
+		start_condition_nagakawa();
+		/* send data 8 byte dau */
+		for(len = 0; len < 14; len ++)
+			sendbyte_data_nagakawa(air_cmd.cmd_content[len]);
+		stop_condition_nagakawa();
+		/* Package so 2 */
+		start_condition_nagakawa();
+		/* send data 8 byte dau */
+		for(len = 14; len < NAGAKAWA_LM_CMD_LEN; len ++)
+			sendbyte_data_nagakawa(air_cmd.cmd_content[len]);		
+		stop_condition_nagakawa();
+		HAL_IWDG_Refresh(&hwwdg);
+		WATCHDOG_REFRESH();
+}
+void start_condition_panasonic(void)
+{
+		AIR_LO();
+		/* tao ra 130 xung */
+		create_pulse(135);
+		delay_us(1600);	
+}
+void stop_condition_panasonic(void)
+{
+		bit_0_panasonic();
+		AIR_LO();
+		delay_us(8200);
+}
+void control_air_panasonic()
+{
+		uint8_t count  = 0;
+		uint8_t len  = 0;
+		/* Gui cau lenh */
+		for(count = 0; count < 1; count ++)
+		{
+			/* start condition */
+			start_condition_panasonic();
+			/* send data 8 byte dau */
+			for(len = 0; len < PANASONIC_HEADER_LEN; len ++)
+				sendbyte_data_panasonic(air_cmd.cmd_content[len]);
+			stop_condition_panasonic();
+			HAL_IWDG_Refresh(&hwwdg);
+			WATCHDOG_REFRESH();
+			/* start condition */
+			start_condition_panasonic();
+			/* send data 8 byte dau */
+			for(len = PANASONIC_HEADER_LEN; len < air_cmd.len_cmd; len ++)
+				sendbyte_data_panasonic(air_cmd.cmd_content[len]);	
+			stop_condition_panasonic();
+			HAL_IWDG_Refresh(&hwwdg);
+			WATCHDOG_REFRESH();		
+		}
+}
+
+void start_condition_reeteck_ykr(void)
+{
+		/* tao ra 130 xung */
+		create_pulse(313);
+		AIR_LO();
+		delay_us(4020);	
+}
+void stop_condition_reeteck_ykr(void)
+{
+		bit_0_reetech_ykr();
+		AIR_LO();
+		delay_us(50000);
+}
+void control_air_reeteck_ykr(void)
+{
+		uint8_t count  = 0;
+		uint8_t len  = 0;
+		/* Gui cau lenh */
+		for(count = 0; count < NUMBER_REPEAT_SEND_CMD; count ++)
+		{
+			/* start condition */
+			start_condition_reeteck_ykr();
+			/* send data 8 byte dau */
+			for(len = 0; len < air_cmd.len_cmd; len ++)
+				sendbyte_data_reetech_ykr(air_cmd.cmd_content[len]);
+			stop_condition_reeteck_ykr();
+			HAL_IWDG_Refresh(&hwwdg);
+			WATCHDOG_REFRESH();
+		}
+}
+
+
+void start_condition_carrier(void)
+{
+		AIR_LO();
+		/* tao ra 130 xung */
+		create_pulse(135);
+		delay_us(4520);	
+}
+void stop_condition_carrier(void)
+{
+		bit_0_panasonic();
+		AIR_LO();
+		delay_us(50000);
+}
+void control_air_carrier (void)
+{
+		uint8_t count  = 0;
+		uint8_t len  = 0;
+		/* Gui cau lenh */
+		for(count = 0; count < NUMBER_REPEAT_SEND_CMD; count ++)
+		{
+			/* start condition */
+			start_condition_carrier();
+			/* send data 8 byte dau */
+			for(len = 0; len < air_cmd.len_cmd; len ++)
+				sendbyte_data_reetech_ykr(air_cmd.cmd_content[len]);
+			stop_condition_carrier();
+			HAL_IWDG_Refresh(&hwwdg);
+			WATCHDOG_REFRESH();
+		}
+}
+
+void restart_condition_gree(void)
+{
+	bit_0_reetech_ykr();
+	bit_1_reetech_ykr();
+	bit_0_reetech_ykr();
+	bit_0_reetech_ykr();
+	delay_us(17000);
+}
+void control_air_gree(void)
+{
+		uint8_t count  = 0;
+		uint8_t len  = 0;
+		/* Gui cau lenh */
+		for(count = 0; count < 2; count ++)
+		{
+			/* start condition */
+			start_condition_reeteck_ykr();
+			/* send data 8 byte dau */
+			for(len = 0; len < air_cmd.len_cmd/2; len ++)
+				sendbyte_data_reetech_ykr(air_cmd.cmd_content[len]);
+			restart_condition_gree();
+			for(len = air_cmd.len_cmd/2; len < air_cmd.len_cmd; len ++)
+				sendbyte_data_reetech_ykr(air_cmd.cmd_content[len]);	
+			stop_condition_reeteck_ykr();
+			HAL_IWDG_Refresh(&hwwdg);
+			WATCHDOG_REFRESH();
+		}
+}
+void start_condition_galanz(void)
+{
+		AIR_LO();
+		/* tao ra 130 xung */
+		create_pulse(140);
+		delay_us(1000);	
+}
+void stop_condition_galanz(void)
+{
+	bit_1_galanz();
+	delay_us(50000);
+}
+void control_air_galanz(void)
+{
+		uint8_t count  = 0;
+		uint8_t len  = 0;
+		/* Gui cau lenh */
+		for(count = 0; count < 2; count ++)
+		{
+			/* start condition */
+			start_condition_galanz();
+			/* send data 8 byte dau */
+			for(len = 0; len < air_cmd.len_cmd; len ++)
+				sendbyte_data_galanz(air_cmd.cmd_content[len]);
+			stop_condition_galanz();
+			HAL_IWDG_Refresh(&hwwdg);
+			WATCHDOG_REFRESH();
+		}
+}
+void start_condition_nagakawa_r51m(void)
+{
+	start_condition_carrier();
+}
+void stop_condition_nagakawa_r51m(void)
+{
+		create_pulse(18);
+		AIR_LO();
+		delay_us(5000);
+}
+void control_air_nagakawa_r51m(void)
+{
+		uint8_t count  = 0;
+		uint8_t len  = 0;
+		/* Gui cau lenh */
+		for(count = 0; count < NUMBER_REPEAT_SEND_CMD; count ++)
+		{
+			/* start condition */
+			start_condition_nagakawa_r51m();
+			/* send data 8 byte dau */
+			for(len = 0; len < air_cmd.len_cmd; len ++)
+				sendbyte_data_nagakawa_r51m(air_cmd.cmd_content[len]);
+			stop_condition_nagakawa_r51m();
+			HAL_IWDG_Refresh(&hwwdg);
+			WATCHDOG_REFRESH();
+		}
+}

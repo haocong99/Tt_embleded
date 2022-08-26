@@ -1,0 +1,327 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.35.0.0
+Copyright (C) 2021 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: hap 1, 2, LIC=UJWP0-B3I36-MM89I-TJBFC-0AQNS-DDDY2
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Plus  Version: 5.35.0.2
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 7 (build 960)
+Assembler:       Armasm.exe V5.06 update 7 (build 960)
+Linker/Locator:  ArmLink.exe V5.06 update 7 (build 960)
+Library Manager: ArmAr.exe V5.06 update 7 (build 960)
+Hex Converter:   FromElf.exe V5.06 update 7 (build 960)
+CPU DLL:         SARMCM3.DLL V5.35.0.2
+Dialog DLL:      DARMCM1.DLL V1.19.4.0
+Target DLL:      Segger\JL2CM3.dll V2.99.40.0
+Dialog DLL:      TARMCM1.DLL V1.14.4.0
+ 
+<h2>Project:</h2>
+D:\phanmemhao\src_Test\src_Test\GLCD_75256.uvprojx
+Project File Date:  10/15/2021
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Rebuild target 'Target 1'
+compiling debug.c...
+.\Inc\debug.h(234): warning:  #1295-D: Deprecated declaration usart_rs485_listen - give arg types
+  void usart_rs485_listen();
+Src\debug.c(45): warning:  #177-D: variable "USART_InitStructure"  was declared but never referenced
+    USART_InitTypeDef USART_InitStructure;
+Src\debug.c(85): warning:  #177-D: variable "USART_InitStructure"  was declared but never referenced
+    USART_InitTypeDef USART_InitStructure;
+Src\debug.c(133): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+  	while(count<strlen((uint8_t*)&package[0])&&package[count]!=','){
+Src\debug.c(138): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+  	memcpy((uint8_t*)&buff_ID[0],(uint8_t*)&buff[0],strlen((uint8_t*)&buff[0]));
+Src\debug.c(139): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *"
+  	rs485_PutByteArray(&buff_ID[0]);
+Src\debug.c(150): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *"
+  	rs485_PutByteArray(&buff_time[0]);
+Src\debug.c(157): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *"
+  	rs485_PutByteArray(&buff_CRC[0]);
+Src\debug.c(159): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *restrict"
+  	sprintf(&buff_response[0],":%s,00,%s\r\n",&buff_ID[0],&buff_CRC[0]);
+Src\debug.c(160): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *"
+  	rs485_PutByteArray(&buff_response[0]);
+Src\debug.c(165): warning:  #177-D: variable "getBufferLen"  was declared but never referenced
+  	uint16_t getBufferLen = 0;
+Src\debug.c(166): warning:  #177-D: variable "startOfMsg"  was declared but never referenced
+  	uint8_t startOfMsg = 0;
+Src\debug.c(167): warning:  #177-D: variable "data"  was declared but never referenced
+  	uint8_t data[MAX_LEN_PACK];
+Src\debug.c(168): warning:  #177-D: variable "len"  was declared but never referenced
+  	uint16_t len = 0;
+Src\debug.c: 14 warnings, 0 errors
+compiling stm32l0xx_hal_msp.c...
+.\Inc\debug.h(234): warning:  #1295-D: Deprecated declaration usart_rs485_listen - give arg types
+  void usart_rs485_listen();
+stm32l0xx_hal_msp.c: 1 warning, 0 errors
+compiling main.c...
+.\Inc\debug.h(234): warning:  #1295-D: Deprecated declaration usart_rs485_listen - give arg types
+  void usart_rs485_listen();
+.\Inc\rtc.h(49): warning:  #1295-D: Deprecated declaration MX_RTC_Init - give arg types
+  void MX_RTC_Init();
+main.c(189): warning:  #177-D: function "Error_Handler"  was declared but never referenced
+  static void Error_Handler(void)
+main.c: 3 warnings, 0 errors
+compiling utils.c...
+compiling leds.c...
+.\Inc\debug.h(234): warning:  #1295-D: Deprecated declaration usart_rs485_listen - give arg types
+  void usart_rs485_listen();
+Src\leds.c(92): warning:  #1-D: last line of file ends without a newline
+  }
+Src\leds.c: 2 warnings, 0 errors
+compiling rtc.c...
+.\Inc\rtc.h(49): warning:  #1295-D: Deprecated declaration MX_RTC_Init - give arg types
+  void MX_RTC_Init();
+.\RTE\Device\STM32L071RZTx\stm32l0xx_hal_conf.h(223): warning:  #47-D: incompatible redefinition of macro "USE_RTOS"  (declared at line 92 of "C:\Users\PhongVu\AppData\Local\Arm\Packs\Keil\STM32L0xx_DFP\2.1.0\Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_def.h")
+  #define  USE_RTOS                     0U     
+.\Inc\debug.h(234): warning:  #1295-D: Deprecated declaration usart_rs485_listen - give arg types
+  void usart_rs485_listen();
+Src\rtc.c: 3 warnings, 0 errors
+compiling watchdog.c...
+compiling stm32l0xx_it.c...
+.\Inc\debug.h(234): warning:  #1295-D: Deprecated declaration usart_rs485_listen - give arg types
+  void usart_rs485_listen();
+stm32l0xx_it.c: 1 warning, 0 errors
+compiling buttom.c...
+.\Inc\debug.h(234): warning:  #1295-D: Deprecated declaration usart_rs485_listen - give arg types
+  void usart_rs485_listen();
+Src\buttom.c: 1 warning, 0 errors
+compiling stm32l0xx_hal.c...
+compiling stm32l0xx_hal_adc_ex.c...
+compiling stm32l0xx_hal_adc.c...
+compiling stm32l0xx_hal_comp_ex.c...
+compiling stm32l0xx_hal_cortex.c...
+compiling stm32l0xx_hal_comp.c...
+compiling stm32l0xx_hal_cryp.c...
+compiling stm32l0xx_hal_cryp_ex.c...
+compiling stm32l0xx_hal_dac.c...
+compiling stm32l0xx_hal_dac_ex.c...
+compiling stm32l0xx_hal_crc.c...
+compiling stm32l0xx_hal_crc_ex.c...
+compiling stm32l0xx_hal_dma.c...
+compiling stm32l0xx_hal_firewall.c...
+compiling stm32l0xx_hal_flash.c...
+compiling stm32l0xx_hal_flash_ex.c...
+compiling stm32l0xx_hal_gpio.c...
+compiling stm32l0xx_hal_i2c_ex.c...
+compiling stm32l0xx_hal_i2c.c...
+compiling stm32l0xx_hal_i2s.c...
+compiling stm32l0xx_hal_irda.c...
+compiling stm32l0xx_hal_iwdg.c...
+compiling stm32l0xx_hal_lcd.c...
+compiling stm32l0xx_hal_pcd.c...
+compiling stm32l0xx_hal_lptim.c...
+compiling stm32l0xx_hal_pcd_ex.c...
+compiling stm32l0xx_hal_pwr.c...
+compiling stm32l0xx_hal_pwr_ex.c...
+compiling stm32l0xx_hal_rng.c...
+compiling stm32l0xx_hal_rcc_ex.c...
+compiling stm32l0xx_hal_rcc.c...
+compiling stm32l0xx_hal_rtc.c...
+compiling stm32l0xx_hal_rtc_ex.c...
+compiling stm32l0xx_hal_smartcard.c...
+compiling stm32l0xx_hal_smartcard_ex.c...
+compiling stm32l0xx_hal_smbus.c...
+compiling stm32l0xx_hal_spi.c...
+compiling stm32l0xx_hal_tim.c...
+compiling stm32l0xx_hal_tsc.c...
+compiling stm32l0xx_hal_tim_ex.c...
+compiling stm32l0xx_hal_uart_ex.c...
+compiling stm32l0xx_hal_usart.c...
+compiling stm32l0xx_hal_uart.c...
+assembling startup_stm32l071xx.s...
+compiling system_stm32l0xx.c...
+compiling stm32l0xx_hal_wwdg.c...
+compiling stm32l0xx_ll_usb.c...
+linking...
+Program Size: Code=16340 RO-data=260 RW-data=156 ZI-data=3436  
+FromELF: creating hex file...
+After Build - User command #1: C:\Keil_v5\\ARM\ARMCC\bin\fromelf.exe --bin --output=GLCD_75256.bin .\Objects\GLCD_75256.axf
+".\Objects\GLCD_75256.axf" - 0 Error(s), 25 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.8.0.pack
+                ARM.CMSIS.5.8.0
+                CMSIS (Common Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.5.0
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.STM32L0xx_DFP.2.1.0.pack
+                Keil.STM32L0xx_DFP.2.1.0
+                STMicroelectronics STM32L0 Series Device Support, Drivers and Examples
+   * Component: ADC Version: 1.10.2
+   * Component: COMMON Version: 1.10.2
+   * Component: COMP Version: 1.10.2
+   * Component: CORTEX Version: 1.10.2
+   * Component: CRC Version: 1.10.2
+   * Component: CRYP Version: 1.10.2
+   * Component: DAC Version: 1.10.2
+   * Component: DMA Version: 1.10.2
+   * Component: FIREWALL Version: 1.10.2
+   * Component: FLASH Version: 1.10.2
+   * Component: GPIO Version: 1.10.2
+   * Component: I2C Version: 1.10.2
+   * Component: I2S Version: 1.10.2
+   * Component: IRDA Version: 1.10.2
+   * Component: IWDG Version: 1.10.2
+   * Component: LCD Version: 1.10.2
+   * Component: LPTIM Version: 1.10.2
+   * Component: PCD Version: 1.10.2
+   * Component: PWR Version: 1.10.2
+   * Component: RCC Version: 1.10.2
+   * Component: RNG Version: 1.10.2
+   * Component: RTC Version: 1.10.2
+   * Component: SMARTCARD Version: 1.10.2
+   * Component: SMBUS Version: 1.10.2
+   * Component: SPI Version: 1.10.2
+   * Component: TIM Version: 1.10.2
+   * Component: TSC Version: 1.10.2
+   * Component: UART Version: 1.10.2
+   * Component: USART Version: 1.10.2
+   * Component: WWDG Version: 1.10.2
+   * Component: Startup Version: 1.0.0
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\Device\STM32L071RZTx
+  .\RTE\_Target_1
+  C:\Users\PhongVu\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include
+  C:\Users\PhongVu\AppData\Local\Arm\Packs\Keil\STM32L0xx_DFP\2.1.0\Drivers\CMSIS\Device\ST\STM32L0xx\Include
+  C:\Users\PhongVu\AppData\Local\Arm\Packs\Keil\STM32L0xx_DFP\2.1.0\Drivers\STM32L0xx_HAL_Driver\Inc
+  C:\Users\PhongVu\AppData\Local\Arm\Packs\Keil\STM32L0xx_DFP\2.1.0\Drivers\STM32L0xx_HAL_Driver\Inc\Legacy
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.5.0
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:ADC:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_adc.c
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_adc_ex.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:COMMON:1.10.2
+      Include file:  MDK\Templates\Inc\main.h
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal.c
+      Include file:  Drivers\STM32L0xx_HAL_Driver\Inc\Legacy\stm32_hal_legacy.h
+      Include file:  MDK\Templates\Inc\stm32l0xx_hal_conf.h
+      Include file:  Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal_def.h
+      Source file:   MDK\Templates\Src\main.c
+      Include file:  Drivers\STM32L0xx_HAL_Driver\Inc\stm32l0xx_hal.h
+      Source file:   MDK\Templates\Src\stm32l0xx_hal_msp.c
+      Include file:  MDK\Templates\Inc\stm32l0xx_it.h
+      Source file:   MDK\Templates\Src\stm32l0xx_it.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:COMP:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_comp_ex.c
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_comp.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:CORTEX:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_cortex.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:CRC:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_crc_ex.c
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_crc.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:CRYP:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_cryp.c
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_cryp_ex.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:DAC:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_dac_ex.c
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_dac.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:DMA:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_dma.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:FIREWALL:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_firewall.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:FLASH:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_flash.c
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_flash_ex.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:GPIO:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_gpio.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:I2C:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_i2c.c
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_i2c_ex.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:I2S:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_i2s.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:IRDA:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_irda.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:IWDG:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_iwdg.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:LCD:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_lcd.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:LPTIM:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_lptim.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:PCD:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_ll_usb.c
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pcd.c
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pcd_ex.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:PWR:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pwr_ex.c
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_pwr.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:RCC:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rcc_ex.c
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rcc.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:RNG:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rng.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:RTC:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rtc_ex.c
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_rtc.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:SMARTCARD:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_smartcard_ex.c
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_smartcard.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:SMBUS:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_smbus.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:SPI:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_spi.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:TIM:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_tim_ex.c
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_tim.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:TSC:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_tsc.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:UART:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_uart_ex.c
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_uart.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:USART:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_usart.c
+
+   * Component: Keil.Standalone::Device:STM32Cube HAL:WWDG:1.10.2
+      Source file:   Drivers\STM32L0xx_HAL_Driver\Src\stm32l0xx_hal_wwdg.c
+
+   * Component: Keil.Standalone::Device:Startup:1.0.0
+      Source file:   MDK\Device\Source\ARM\STM32L0xx_OPT.s
+      Include file:  Drivers\CMSIS\Device\ST\STM32L0xx\Include\stm32l0xx.h
+      Source file:   Drivers\CMSIS\Device\ST\STM32L0xx\Source\Templates\system_stm32l0xx.c
+      Source file:   Drivers\CMSIS\Device\ST\STM32L0xx\Source\Templates\arm\startup_stm32l071xx.s
+Build Time Elapsed:  00:00:49
+</pre>
+</body>
+</html>

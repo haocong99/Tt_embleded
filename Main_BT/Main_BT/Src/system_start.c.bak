@@ -1,0 +1,102 @@
+#include "system_start.h"
+static uint8_t system_error = NO_ERROR;
+/* Ham nay test flash bang cach xoa thu mot sector, ghi vao mot chuoi, 
+doc ra chuoi do, so sanh voi chuoi ghi vao */
+uint8_t test_flash(void)
+{
+	uint8_t i = 0;
+	uint8_t arr_read[6] = {0,0,0,0,0};
+	/* reset watchdog */
+	WATCHDOG_REFRESH();
+	/* xoa flash */	
+	S25FL1_Erase_Sector(SECTOR_TEST_FLASH);
+	for(i = 0; i<5; i++)
+	{
+		if(S25FL1_Read_Byte(&arr_read[i], ADD_TEST_FLASH +i) != READ_OK_STATUS)
+		{
+			debug_len = sprintf((char *)&debug_arr[0],"Doc flash sau xoa loi\n");
+			UART_Send((uint8_t *)&debug_arr[0],debug_len);
+			return ERROR_READ_FLASH;
+		}else {
+			if(arr_read[i] != 0xff) /* neu xoa khong duoc gia tri nay co the khac 0xff */
+			{
+				debug_len = sprintf((char *)&debug_arr[0],"Xoa flash loi byte[%d] = %d\n",i,arr_read[i]);
+				UART_Send((uint8_t *)&debug_arr[0],debug_len);
+				return ERROR_EREASE_FLASH;				
+			}
+		}
+	}
+	memset(&arr_read[0],0,6);
+	/* check flash */
+	debug_len = sprintf((char *)&debug_arr[0],"Ghi flash : 0,1,2,3,4\n");
+	UART_Send((uint8_t *)&debug_arr[0],debug_len);
+	for(i = 0; i<5; i++)
+	{
+		if(S25FL1_Write_Byte(i,  ADD_TEST_FLASH + i) != WRITE_OK_STATUS)
+		{
+			debug_len = sprintf((char *)&debug_arr[0],"Ghi flash loi\n");
+			UART_Send((uint8_t *)&debug_arr[0],debug_len);
+			return ERROR_WRITE_FLASH;
+		}
+	}
+	HAL_Delay(100);
+	for(i = 0; i<5; i++)
+	{
+		if(S25FL1_Read_Byte(&arr_read[i], ADD_TEST_FLASH +i) != READ_OK_STATUS)
+		{
+			debug_len = sprintf((char *)&debug_arr[0],"Doc flash loi\n");
+			UART_Send((uint8_t *)&debug_arr[0],debug_len);
+			return ERROR_READ_FLASH;
+		}else{
+			if(i != arr_read[i])
+			{
+				UART_Send((uint8_t *)"Khoi tao flash loi\n",19);
+				return ERROR_READ_FLASH;
+			}			
+		}
+	}
+	debug_len = sprintf((char *)&debug_arr[0],"Doc flash: %d,%d,%d,%d,%d\n",arr_read[0],arr_read[1],arr_read[2],arr_read[3],arr_read[4]);
+	UART_Send((uint8_t *)&debug_arr[0],debug_len);
+	return NO_ERROR;
+}
+/* Khoi tao va doc thu sensor */
+uint8_t test_sensor(void)
+{
+	uint16_t temp_test = 0;
+	uint8_t count_test = 0;
+	uint8_t error_read_sensor = ERROR_SENSOR;
+	while((count_test < NUMBER_TRY_READ) && (error_read_sensor == ERROR_SENSOR))
+	{
+		if( sensor_get_data(&temp_test) == 0)
+		{
+			debug_len = sprintf((char *)&debug_arr[0],"Doc nhiet do thanh cong %d C\n",temp_test);
+			UART_Send((uint8_t *)&debug_arr[0],debug_len);	
+			error_read_sensor = NO_ERROR;
+			break;
+		}else{
+			/* to do */
+		}
+	}
+	return error_read_sensor;
+}
+uint8_t get_error_system(void)
+{
+	return system_error;
+}
+uint8_t test_system(void)
+{
+	system_error = NO_ERROR;
+	debug_len = sprintf((char *)&debug_arr[0],"Version sofware: %s\n",VESION_SOFT_WARE);
+	UART_Send((uint8_t *)&debug_arr[0],debug_len);
+	debug_len = sprintf((char *)&debug_arr[0],"Version hardware: %s\n",VERSION_HARDWARE);
+	UART_Send((uint8_t *)&debug_arr[0],debug_len);
+	debug_len = sprintf((char *)&debug_arr[0],"Uapdate time: %s, date: %s\n",__TIME__,__DATE__);
+	UART_Send((uint8_t *)&debug_arr[0],debug_len);	
+	debug_len = sprintf((char *)&debug_arr[0],"Test flash!\n");
+	UART_Send((uint8_t *)&debug_arr[0],debug_len);
+	system_error += test_flash();	
+	debug_len = sprintf((char *)&debug_arr[0],"Test sensor!\n");
+	UART_Send((uint8_t *)&debug_arr[0],debug_len);
+	system_error += test_sensor();
+	return system_error;
+}
